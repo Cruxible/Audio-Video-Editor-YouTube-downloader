@@ -50,8 +50,10 @@ class FileChooserWindow_Stitch_Audio(Gtk.Window):
     def on_delete_event(self, widget, event):
         # Destroy the FileChooserWindow
         self.destroy()
-        # Destroy the treeview_window
-        self.treeview_window.destroy()
+        GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
+        # Make the treeview window visible
+        #self.treeview_window.destroy()
+        self.treeview_window.show_all()
         # Return False to propagate the event further (this is needed for the window to actually close)
         return False
 
@@ -135,8 +137,10 @@ class FileChooserWindow_Stitch_Vid(Gtk.Window):
     def on_delete_event(self, widget, event):
         # Destroy the FileChooserWindow
         self.destroy()
-        # Destroy the treeview_window
-        self.treeview_window.destroy()
+        GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
+        # Make the treeview window visible
+        #self.treeview_window.destroy()
+        self.treeview_window.show_all()
         # Return False to propagate the event further (this is needed for the window to actually close)
         return False
 
@@ -219,8 +223,10 @@ class FileChooserWindow_Adjust_Vol(Gtk.Window):
     def on_delete_event(self, widget, event):
         # Destroy the FileChooserWindow
         self.destroy()
-        # Destroy the treeview_window
-        self.treeview_window.destroy()
+        GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
+        # Make the treeview window visible
+        #self.treeview_window.destroy()
+        self.treeview_window.show_all()
         # Return False to propagate the event further (this is needed for the window to actually close)
         return False
 
@@ -304,8 +310,10 @@ class FileChooserWindow_Extract(Gtk.Window):
     def on_delete_event(self, widget, event):
         # Destroy the FileChooserWindow
         self.destroy()
-        # Destroy the treeview_window
-        self.treeview_window.destroy()
+        GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
+        # Make the treeview window visible
+        #self.treeview_window.destroy()
+        self.treeview_window.show_all()
         # Return False to propagate the event further (this is needed for the window to actually close)
         return False
 
@@ -388,8 +396,10 @@ class FileChooserWindow_Merge(Gtk.Window):
     def on_delete_event(self, widget, event):
         # Destroy the FileChooserWindow
         self.destroy()
-        # Destroy the treeview_window
-        self.treeview_window.destroy()
+        GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
+        # Make the treeview window visible
+        #self.treeview_window.destroy()
+        self.treeview_window.show_all()
         # Return False to propagate the event further (this is needed for the window to actually close)
         return False
 
@@ -495,8 +505,10 @@ class FileChooserWindow_Audio(Gtk.Window):
     def on_delete_event(self, widget, event):
         # Destroy the FileChooserWindow
         self.destroy()
-        # Destroy the treeview_window
-        self.treeview_window.destroy()
+        GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
+        # Make the treeview window visible
+        #self.treeview_window.destroy()
+        self.treeview_window.show_all()
         # Return False to propagate the event further (this is needed for the window to actually close)
         return False
 
@@ -587,8 +599,10 @@ class DownloaderWindow(Gtk.Window):
     def on_delete_event(self, widget, event):
         # Destroy the Downloader Window
         self.destroy()
-        # Destroy the treeview_window
-        self.treeview_window.destroy()
+        GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
+        # Make the treeview window visible
+        #self.treeview_window.destroy()
+        self.treeview_window.show_all()
         # Return False to propagate the event further (this is needed for the window to actually close)
         return False
 
@@ -669,8 +683,10 @@ class FileChooserWindow(Gtk.Window):
     def on_delete_event(self, widget, event):
         # Destroy the FileChooserWindow
         self.destroy()
-        # Destroy the treeview_window
-        self.treeview_window.destroy()
+        GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
+        # Make the treeview window visible
+        #self.treeview_window.destroy()
+        self.treeview_window.show_all()
         # Return False to propagate the event further (this is needed for the window to actually close)
         return False
 
