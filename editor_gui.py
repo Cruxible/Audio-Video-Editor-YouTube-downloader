@@ -6,6 +6,8 @@ import os
 import gi
 import time
 import subprocess
+import threading
+import pygame
 from moviepy.editor import AudioFileClip, VideoFileClip
 from moviepy.audio.fx.all import volumex
 from moviepy.editor import concatenate_videoclips
@@ -628,6 +630,36 @@ class DownloaderWindow(Gtk.Window):
         formats = [line for line in lines if ("mp4" in line)]
         self.label.set_text('\n'.join(formats))
 
+def Vid_Player_Window():
+    dialog = Gtk.FileChooserDialog(
+        title="Please choose a file",
+        action=Gtk.FileChooserAction.OPEN
+    )
+    dialog.set_current_folder(os.path.expanduser('~/Videos'))
+    dialog.add_buttons(
+        Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+        Gtk.STOCK_OPEN, Gtk.ResponseType.OK
+    )
+
+    response = dialog.run()
+    if response == Gtk.ResponseType.OK:
+        filename = dialog.get_filename()
+        dialog.destroy()  # Destroy the dialog before playing the video
+
+        def play_video():
+            pygame.init()
+            pygame.display.set_caption('Video Player')
+
+            video = VideoFileClip(filename)
+            video.preview()
+
+            pygame.quit()
+
+        # Run the video player in a separate thread
+        video_thread = threading.Thread(target=play_video)
+        video_thread.start()
+
+
 class FileChooserWindow(Gtk.Window):
     def __init__(self, treeview_window):
         Gtk.Window.__init__(self, title="Cut Video")
@@ -757,7 +789,15 @@ class TreeViewFilterWindow(Gtk.Window):
 
         # Creating the ListStore model
         self.func_liststore = Gtk.ListStore(str)
-        for main_functions in ["YT Downloader", "Cut Video", "Cut Audio", "Merge Audio Video", "Extract Audio", "Adjust Volume", "Stitch Video", "Stitch Audio"]:
+        for main_functions in ["Play Video",
+                                "YT Downloader",
+                                "Cut Video", "Cut Audio",
+                                "Merge Audio Video",
+                                "Extract Audio",
+                                "Adjust Volume",
+                                "Stitch Video",
+                                "Stitch Audio"
+                                ]:
             self.func_liststore.append([main_functions])
 
         # Creating the treeview and adding the columns
@@ -788,7 +828,9 @@ class TreeViewFilterWindow(Gtk.Window):
         main_functions = model.get_value(iter, 0)
 
         # Perform an action based on the selected fruit
-        if main_functions == "YT Downloader":
+        if main_functions == "Play Video":
+            self.Video_Player_func()
+        elif main_functions == "YT Downloader":
             self.yt_downloader_func()
         elif main_functions == "Cut Video":
             self.cut_vid_func()
@@ -804,6 +846,9 @@ class TreeViewFilterWindow(Gtk.Window):
             self.stitch_video()
         elif main_functions == "Stitch Audio":
             self.stitch_audio()
+
+    def Video_Player_func(self):
+        play_vid_win = Vid_Player_Window()
 
     def yt_downloader_func(self):
         ytd_win = DownloaderWindow(self)
