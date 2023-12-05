@@ -14,3 +14,5 @@ sudo apt-get install python3-gi
 sudo apt-get install python3-gi gobject-introspection gir1.2-gtk-3.0
 
 pip3 install moviepy
+
+pip install pycairo PyGObject
