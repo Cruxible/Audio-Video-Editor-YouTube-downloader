@@ -87,23 +87,26 @@ class FileChooserWindow_Stitch_Audio(Gtk.Window):
             return
 
         try:
-            clips = [AudioFileClip(f) for f in self.audio_files]
-            final_clip = concatenate_audioclips(clips)
-            os.chdir(os.path.expanduser('~/Desktop'))
-            final_clip.write_audiofile(output_filename)
+            def stitch_audio_func():
+                clips = [AudioFileClip(f) for f in self.audio_files]
+                final_clip = concatenate_audioclips(clips)
+                os.chdir(os.path.expanduser('~/Desktop'))
+                final_clip.write_audiofile(output_filename)
 
-            self.audio_files = []
-            self.button3.set_sensitive(False)
-            self.label.set_text("Audio stitching completed successfully!")
-            GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
-            # Make the treeview window visible
-            #self.treeview_window.destroy()
-            self.treeview_window.show_all()
+                self.audio_files = []
+                self.button3.set_sensitive(False)
+                self.label.set_text("Audio stitching completed successfully!")
+                GLib.timeout_add_seconds(0, self.destroy)  # 5 seconds delay
+                # Make the treeview window visible
+                #self.treeview_window.destroy()
+                self.treeview_window.show_all()
+            # Run the video player in a separate thread
+            stitch_audio_thread = threading.Thread(target=stitch_audio_func)
+            stitch_audio_thread.start()
         except Exception as e:
             self.label.set_text(str(e))
 
 class FileChooserWindow_Stitch_Vid(Gtk.Window):
-
     def __init__(self, treeview_window):
         Gtk.Window.__init__(self, title="Stitch Videos")
         self.set_default_size(400, 200)
@@ -174,18 +177,22 @@ class FileChooserWindow_Stitch_Vid(Gtk.Window):
             return
 
         try:
-            clips = [VideoFileClip(f) for f in self.video_files]
-            final_clip = concatenate_videoclips(clips)
-            os.chdir(os.path.expanduser('~/Desktop'))
-            final_clip.write_videofile(output_filename)
+            def stitch_video_func():
+                clips = [VideoFileClip(f) for f in self.video_files]
+                final_clip = concatenate_videoclips(clips)
+                os.chdir(os.path.expanduser('~/Desktop'))
+                final_clip.write_videofile(output_filename)
 
-            self.video_files = []
-            self.button3.set_sensitive(False)
-            self.label.set_text("Video stitching completed successfully!")
-            GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
-            # Make the treeview window visible
-            #self.treeview_window.destroy()
-            self.treeview_window.show_all()
+                self.video_files = []
+                self.button3.set_sensitive(False)
+                self.label.set_text("Video stitching completed successfully!")
+                GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
+                # Make the treeview window visible
+                #self.treeview_window.destroy()
+                self.treeview_window.show_all()
+            # Run the video player in a separate thread
+            stitch_video_thread = threading.Thread(target=stitch_video_func)
+            stitch_video_thread.start()
         except Exception as e:
             self.label.set_text(str(e))
 
@@ -265,18 +272,22 @@ class FileChooserWindow_Adjust_Vol(Gtk.Window):
             return
 
         try:
-            audio = AudioFileClip(self.audio_file)
-            audio = audio.fx(volumex, volume_level)
-            os.chdir(os.path.expanduser('~/Desktop'))
-            audio.write_audiofile(output_filename)
+            def adjust_vol_func():
+                audio = AudioFileClip(self.audio_file)
+                audio = audio.fx(volumex, volume_level)
+                os.chdir(os.path.expanduser('~/Desktop'))
+                audio.write_audiofile(output_filename)
 
-            self.audio_file = None
-            self.button2.set_sensitive(False)
-            self.label.set_text("Volume adjustment completed successfully!")
-            GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
-            # Make the treeview window visible
-            #self.treeview_window.destroy()
-            self.treeview_window.show_all()
+                self.audio_file = None
+                self.button2.set_sensitive(False)
+                self.label.set_text("Volume adjustment completed successfully!")
+                GLib.timeout_add_seconds(0, self.destroy)  # 5 seconds delay
+                # Make the treeview window visible
+                #self.treeview_window.destroy()
+                self.treeview_window.show_all()
+            # Run the video player in a separate thread
+            adjust = threading.Thread(target=adjust_vol_func)
+            adjust.start()
         except Exception as e:
             self.label.set_text(str(e))
 
@@ -346,18 +357,21 @@ class FileChooserWindow_Extract(Gtk.Window):
             return
 
         try:
-            video = VideoFileClip(self.video_file)
-            audio = video.audio
-            os.chdir(os.path.expanduser('~/Desktop'))
-            audio.write_audiofile(output_filename)
-
-            self.video_file = None
-            self.button2.set_sensitive(False)
-            self.label.set_text("Audio extraction completed successfully!")
-            GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
-            # Make the treeview window visible
-            #self.treeview_window.destroy()
-            self.treeview_window.show_all()
+            def extract_audio_func():
+                video = VideoFileClip(self.video_file)
+                audio = video.audio
+                os.chdir(os.path.expanduser('~/Desktop'))
+                audio.write_audiofile(output_filename)
+                self.video_file = None
+                self.button2.set_sensitive(False)
+                self.label.set_text("Audio extraction completed successfully!")
+                GLib.timeout_add_seconds(0, self.destroy)  # 5 seconds delay
+                # Make the treeview window visible
+                #self.treeview_window.destroy()
+                self.treeview_window.show_all()
+            # Run the video player in a separate thread
+            extract_func = threading.Thread(target=extract_audio_func)
+            extract_func.start()
         except Exception as e:
             self.label.set_text(str(e))
 
@@ -432,23 +446,27 @@ class FileChooserWindow_Merge(Gtk.Window):
 
     def on_merge_clicked(self, widget):
         try:
-            video = VideoFileClip(self.video_file)
-            audio = AudioFileClip(self.audio_file)
-            final_clip = video.set_audio(audio)
-            output_filename = self.entry.get_text()
-            if not output_filename.endswith('.mp4'):
-                output_filename += '.mp4'
-            os.chdir(os.path.expanduser('~/Desktop'))
-            final_clip.write_videofile(output_filename)
+            def merge_func():
+                video = VideoFileClip(self.video_file)
+                audio = AudioFileClip(self.audio_file)
+                final_clip = video.set_audio(audio)
+                output_filename = self.entry.get_text()
+                if not output_filename.endswith('.mp4'):
+                    output_filename += '.mp4'
+                os.chdir(os.path.expanduser('~/Desktop'))
+                final_clip.write_videofile(output_filename)
 
-            self.video_file = None
-            self.audio_file = None
-            self.button3.set_sensitive(False)
-            self.label.set_text("Merge completed successfully!")
-            GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
-            # Make the treeview window visible
-            #self.treeview_window.destroy()
-            self.treeview_window.show_all()
+                self.video_file = None
+                self.audio_file = None
+                self.button3.set_sensitive(False)
+                self.label.set_text("Merge completed successfully!")
+                GLib.timeout_add_seconds(0, self.destroy)  # 5 seconds delay
+                # Make the treeview window visible
+                #self.treeview_window.destroy()
+                self.treeview_window.show_all()
+            # Run the video player in a separate thread
+            merge_func = threading.Thread(target=merge_func)
+            merge_func.start()
         except Exception as e:
             self.label.set_text(str(e))
 
@@ -556,13 +574,19 @@ class FileChooserWindow_Audio(Gtk.Window):
                 return
             if filename is not None:
                 self.label.set_text("The user entered the start time: %d\n            and end time: %d" % (start_time, end_time))
-                clip = AudioFileClip(filename).subclip(start_time, end_time)
-                os.chdir(os.path.expanduser('~/Desktop'))
-                clip.write_audiofile(filename_str)
-                GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
-                # Make the treeview window visible
-                #self.treeview_window.destroy()
-                self.treeview_window.show_all()
+                
+                def cut_vid_func():
+                    clip = AudioFileClip(filename).subclip(start_time, end_time)
+                    os.chdir(os.path.expanduser('~/Desktop'))
+                    clip.write_audiofile(filename_str)
+                    GLib.timeout_add_seconds(0, self.destroy)  # 5 seconds delay
+                    # Make the treeview window visible
+                    #self.treeview_window.destroy()
+                    self.treeview_window.show_all()
+                
+                # Run the video player in a separate thread
+                audio_cut_thread = threading.Thread(target=cut_vid_func)
+                audio_cut_thread.start()
             else:
                 self.label.set_text("No file was selected.")
         except ValueError:
@@ -571,6 +595,7 @@ class FileChooserWindow_Audio(Gtk.Window):
 class DownloaderWindow(Gtk.Window):
     def __init__(self, treeview_window):
         Gtk.Window.__init__(self, title="YouTube Downloader")
+        self.set_default_size(400, 250)  # Set the window size here
         # This is to destroy the treeview when x is pressed.
         self.treeview_window = treeview_window
         # Connect the delete-event signal to the on_delete_event function
@@ -617,12 +642,16 @@ class DownloaderWindow(Gtk.Window):
     def on_download_button_clicked(self, widget):
         url = self.url_entry.get_text()
         format_code = self.format_entry.get_text()
-        os.chdir(os.path.expanduser('~/Desktop'))
-        subprocess.run(["yt-dlp", "-f", format_code, url])
-        GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
-        # Make the treeview window visible
-        #self.treeview_window.destroy()
-        self.treeview_window.show_all()
+        def download_vid_func():
+            os.chdir(os.path.expanduser('~/Desktop'))
+            subprocess.run(["yt-dlp", "-f", format_code, url])
+            GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
+            # Make the treeview window visible
+            #self.treeview_window.destroy()
+            self.treeview_window.show_all()
+        # Run the video player in a separate thread
+        video_download_thread = threading.Thread(target=download_vid_func)
+        video_download_thread.start()
 
     def update_formats(self, url):
         result = subprocess.run(["yt-dlp", "-F", url], capture_output=True, text=True)
@@ -649,12 +678,9 @@ def Vid_Player_Window():
         def play_video():
             pygame.init()
             pygame.display.set_caption('Video Player')
-
             video = VideoFileClip(filename)
             video.preview()
-
             pygame.quit()
-
         # Run the video player in a separate thread
         video_thread = threading.Thread(target=play_video)
         video_thread.start()
@@ -674,7 +700,7 @@ class FileChooserWindow(Gtk.Window):
         # Connect the delete-event signal to the on_delete_event function
         self.connect("delete-event", self.on_delete_event)
         
-        self.set_default_size(375, 275)
+        self.set_default_size(362, 300)
         box = Gtk.Box(spacing=6)
         box.set_border_width(10)  # Creates a 10-pixel buffer around the box
         fixed = Gtk.Fixed()
@@ -693,13 +719,13 @@ class FileChooserWindow(Gtk.Window):
 
         # Add a textbox for start time
         self.start_time_textbox = Gtk.Entry()
-        self.start_time_textbox.set_text("start time")  # Set the initial text
+        self.start_time_textbox.set_text("0")  # Set the initial text
         self.start_time_textbox.set_size_request(200, 20)  # Set the width to 200 and the height to 20
         fixed.put(self.start_time_textbox, 150, 50)  # Position the textbox at (150,50)
 
         # Add a textbox for end time
         self.end_time_textbox = Gtk.Entry()
-        self.end_time_textbox.set_text("end time")  # Set the initial text
+        self.end_time_textbox.set_text("30")  # Set the initial text
         self.end_time_textbox.set_size_request(200, 20)  # Set the width to 200 and the height to 20
         fixed.put(self.end_time_textbox, 150, 90)  # Position the textbox at (150,80)
         self.treeview_window = treeview_window
@@ -711,8 +737,9 @@ class FileChooserWindow(Gtk.Window):
         fixed.put(self.filename_textbox, 150, 130)  # Position the textbox at (150,130)
 
         #create the label
-        self.label = Gtk.Label(label="Please choose a file, a start time,\n          end time and filename")
-        fixed.put(self.label, 70, 200)
+        self.label = Gtk.Label()
+        self.label.set_markup("<span font='14' foreground='white'>Please choose a start time,\nend time in seconds,\nand choose a file and a filename.</span>")
+        fixed.put(self.label, 45, 180)
 
     def on_delete_event(self, widget, event):
         # Destroy the FileChooserWindow
@@ -755,33 +782,37 @@ class FileChooserWindow(Gtk.Window):
             end_time = int(end_time_str)  # Try to convert the end time to an integer
             filename_str = self.filename_textbox.get_text()  # Get the text from the filename textbox
             if not filename_str.endswith('.mp4'):
-                self.label.set_text("The filename must end with .mp4")
+                self.label.set_markup("<span font='14' foreground='white'>The filename must end with .mp4</span>")
                 return
             # Here you can add your video cutting function
             filename = self.dialog.get_filename()
             if self.dialog is None:
-                self.label.set_text("Please select a file first.")
+                self.label.set_markup("<span font='14' foreground='white'>Please select a file first.</span>")
                 return
             if filename is not None:
-                self.label.set_text("The user entered the start time: %d\n and end time: %d" % (start_time, end_time))
-                clip = VideoFileClip(filename).subclip(start_time, end_time)
-                os.chdir(os.path.expanduser('~/Desktop'))
-                clip.write_videofile(filename_str)
-                GLib.timeout_add_seconds(1, self.destroy)  # 5 seconds delay
-                # Make the treeview window visible
-                #self.treeview_window.destroy()
-                self.treeview_window.show_all()
+                def cut_vid_func():
+                    clip = VideoFileClip(filename).subclip(start_time, end_time)
+                    os.chdir(os.path.expanduser('~/Desktop'))
+                    clip.write_videofile(filename_str)
+                    GLib.timeout_add_seconds(0, self.destroy)  # 5 seconds delay
+                    # Make the treeview window visible
+                    #self.treeview#_window.destroy()
+                    self.treeview_window.show_all()
+                self.label.set_markup(f"<span font='14' foreground='white'>                   Start time: {start_time}\n                   End time: {end_time}\n                   Video rendering.\n                   Please wait...</span>")
+                # Run the video player in a separate thread
+                video_cut_thread = threading.Thread(target=cut_vid_func)
+                video_cut_thread.start()
             else:
-                self.label.set_text("No file was selected.")
+                self.label.set_markup("<span font='14' foreground='white'>No file was selected.</span>")
         except ValueError:
-            self.label.set_text("The user must enter a valid integer")
+            self.label.set_markup("<span font='14' foreground='white'>The user must enter a valid integer</span>")
 
 class TreeViewFilterWindow(Gtk.Window):
     def __init__(self):
-        Gtk.Window.__init__(self, title="Pyra Editor Function")
+        Gtk.Window.__init__(self, title="Pyra Video/Audio Editor")
 
         # Set the window size here
-        self.set_default_size(300, 300)
+        self.set_default_size(340, 300)
 
         # Setting up the self.grid in which the elements are to be positionned
         self.grid = Gtk.Grid()
@@ -804,6 +835,7 @@ class TreeViewFilterWindow(Gtk.Window):
         self.treeview = Gtk.TreeView.new_with_model(self.func_liststore)
         for i, column_title in enumerate(["Editing Functions"]):
             renderer = Gtk.CellRendererText()
+            renderer.set_property("font", "Sans 14")  # Change the font size here
             column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.treeview.append_column(column)
 
